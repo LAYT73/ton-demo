@@ -83,7 +83,7 @@ class TonProofDemoApiService {
     return response as {};
   }
 
-  async createJetton(jetton): Promise<SendTransactionRequest> {
+  async createJetton(jetton: object): Promise<SendTransactionRequest> {
     return await (
       await fetch(`${this.host}/api/create_jetton`, {
         body: JSON.stringify(jetton),

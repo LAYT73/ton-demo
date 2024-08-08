@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import ReactJson, { InteractionProps } from 'react-json-view';
+import { useState } from 'react';
+import ReactJson from 'react-json-view';
 import { SendTransactionRequest, useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import './style.scss';
 
@@ -16,12 +16,12 @@ const defaultTx = {
 };
 
 export function TxForm() {
-  const [tx, setTx] = useState(defaultTx);
+  const [tx, setTx] = useState<SendTransactionRequest>(defaultTx);
   const wallet = useTonWallet();
   const [tonConnectUi] = useTonConnectUI();
 
-  const handleChange = (value) => {
-    setTx(value.updated_src as SendTransactionRequest);
+  const handleChange = (value: any) => {
+    setTx(value?.updated_src as SendTransactionRequest);
   };
 
   const handleSubmit = async () => {
