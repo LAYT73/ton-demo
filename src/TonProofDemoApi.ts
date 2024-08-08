@@ -5,12 +5,12 @@ import {
   TonProofItemReplySuccess
 } from "@tonconnect/ui-react";
 import './patch-local-storage-for-github-pages';
-import {CreateJettonRequestDto} from "./server/dto/create-jetton-request-dto";
+import { CreateJettonRequest } from "./server-js/src/dto/create-jetton-request-dto";
 
 class TonProofDemoApiService {
   private localStorageKey = 'demo-api-access-token';
 
-  private host = document.baseURI.replace(/\/$/, '');
+  private host = 'http://localhost:3001';
 
   public accessToken: string | null = null;
 
@@ -31,7 +31,7 @@ class TonProofDemoApiService {
           method: 'POST',
         })
       ).json();
-      return {tonProof: response.payload as string};
+      return {tonProof: response.body.payload as string};
     } catch {
       return null;
     }
@@ -39,6 +39,7 @@ class TonProofDemoApiService {
 
   async checkProof(proof: TonProofItemReplySuccess['proof'], account: Account): Promise<void> {
     try {
+      console.log('checkProof:', proof);
       const reqBody = {
         address: account.address,
         network: account.chain,
@@ -52,13 +53,17 @@ class TonProofDemoApiService {
       const response = await (
         await fetch(`${this.host}/api/check_proof`, {
           method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(reqBody),
         })
       ).json();
 
-      if (response?.token) {
-        localStorage.setItem(this.localStorageKey, response.token);
-        this.accessToken = response.token;
+      if (response?.body.token) {
+        localStorage.setItem(this.localStorageKey, response.body.token);
+        this.accessToken = response.body.token;
       }
     } catch (e) {
       console.log('checkProof error:', e);
@@ -67,7 +72,7 @@ class TonProofDemoApiService {
 
   async getAccountInfo(account: Account) {
     const response = await (
-      await fetch(`${this.host}/api/get_account_info`, {
+      await fetch(`${this.host}/api/get_account_info?userId=${JSON.stringify(account)}`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
           'Content-Type': 'application/json',
@@ -78,7 +83,7 @@ class TonProofDemoApiService {
     return response as {};
   }
 
-  async createJetton(jetton: CreateJettonRequestDto): Promise<SendTransactionRequest> {
+  async createJetton(jetton): Promise<SendTransactionRequest> {
     return await (
       await fetch(`${this.host}/api/create_jetton`, {
         body: JSON.stringify(jetton),

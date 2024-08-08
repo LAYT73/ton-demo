@@ -24,12 +24,14 @@ export const TonProofDemo = () => {
 
 		if (payload) {
 			tonConnectUI.setConnectRequestParameters({ state: 'ready', value: payload });
+			console.log('recreateProofPayload: ', payload);
 		} else {
 			tonConnectUI.setConnectRequestParameters(null);
 		}
 	}, [tonConnectUI, firstProofLoading])
 
 	if (firstProofLoading.current) {
+		console.log('firstProofLoading', firstProofLoading.current);
 		recreateProofPayload();
 	}
 
@@ -37,6 +39,7 @@ export const TonProofDemo = () => {
 
 	useEffect(() =>
 		tonConnectUI.onStatusChange(async w => {
+			console.log('onStatusChange', w);
 			if (!w) {
 				TonProofDemoApi.reset();
 				setAuthorized(false);
@@ -45,10 +48,11 @@ export const TonProofDemo = () => {
 
 			if (w.connectItems?.tonProof && 'proof' in w.connectItems.tonProof) {
 				await TonProofDemoApi.checkProof(w.connectItems.tonProof.proof, w.account);
+
 			}
 
 			if (!TonProofDemoApi.accessToken) {
-				tonConnectUI.disconnect();
+				await tonConnectUI.disconnect();
 				setAuthorized(false);
 				return;
 			}
