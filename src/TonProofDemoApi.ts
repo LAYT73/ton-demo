@@ -5,7 +5,7 @@ import {
   TonProofItemReplySuccess
 } from "@tonconnect/ui-react";
 import './patch-local-storage-for-github-pages';
-import { CreateJettonRequest } from "./server-js/src/dto/create-jetton-request-dto";
+import { CreateJettonRequest } from "./create-jetton-request-dto";
 
 class TonProofDemoApiService {
   private localStorageKey = 'demo-api-access-token';
